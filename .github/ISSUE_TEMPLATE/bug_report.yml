@@ -1,0 +1,30 @@
+name: Bug report
+description: Report a reproducible problem with the prototype.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: Do not include credentials, private production images, or unlicensed model/data files.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe the observed behavior and what you expected.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Include a minimal, safe reproduction.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Python, OS, Ultralytics/OpenCV versions, and camera/GPU details if relevant.
+    validations:
+      required: false

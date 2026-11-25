@@ -1,0 +1,27 @@
+name: Feature request
+description: Suggest an improvement to the prototype.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: Problem or need
+      description: What user need would this address?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the behavior you would like.
+    validations:
+      required: true
+  - type: checkboxes
+    id: limitations
+    attributes:
+      label: Safety and data considerations
+      options:
+        - label: I have not included private data, credentials, or assets without redistribution permission.
+          required: true

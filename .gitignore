@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# Jupyter-generated files and outputs are cleared before release
+.ipynb_checkpoints/
+
+# Local training and inference artifacts
+runs/
+*.pt
+*.cache
+
+# Dataset files are not included until redistribution rights are verified
+dataset_final/train/
+dataset_final/val/
+
+# Unrelated local utility; keep it on disk but out of this project release
+/test.py
