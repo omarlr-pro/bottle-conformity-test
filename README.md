@@ -1,23 +1,24 @@
 # Bottle Conformity Test
 
 A Python and YOLOv8 computer-vision prototype for detecting visible bottle
-packaging defects from a webcam. It can also retrain an object-detection model
-from a YOLO-format dataset supplied by the user.
+packaging defects. Try the local image demo with `app.py`, use the webcam
+notebook, or retrain an object-detection model from a YOLO-format dataset.
 
 > **Prototype only:** this project is not a validated industrial inspection
-> system and does not certify product conformity. The live notebook currently
-> displays `CONFORME` whenever it detects no defect. It does not verify that a
-> bottle is present, and a missed detection must not be treated as proof of
-> conformity. Do not use it as the sole basis for quality, safety, or
-> regulatory decisions.
+> system and does not certify product conformity. No detected defect is not
+> proof of conformity: the detector does not verify that a bottle is present
+> or that an inspection is complete. Do not use it as the sole basis for
+> quality, safety, or regulatory decisions.
 
 ## What it does
 
-The project demonstrates two workflows:
+The project demonstrates three workflows:
 
-1. **Live inspection:** load a trained YOLO model, select an available camera,
-   detect packaging defects, draw bounding boxes, and display a status.
-2. **Model training:** fine-tune the YOLOv8n model for 50 epochs using the
+1. **Local image demo:** run `app.py` to upload an image, detect packaging
+   defects, and download an annotated result.
+2. **Live inspection:** use the webcam notebook to detect packaging defects
+   and display a status.
+3. **Model training:** fine-tune the YOLOv8n model for 50 epochs using the
    dataset paths and five class names in `dataset_final/data.yaml`.
 
 The configured defect classes are:
@@ -30,16 +31,15 @@ The configured defect classes are:
 | 3 | Misaligned label |
 | 4 | Foreign object |
 
-The live notebook uses a confidence threshold of `0.40`. It does not save
-inspection histories, maintain traceability records, provide user accounts,
-or store results in a database.
-
-No project screenshots are included in the current workspace.
+The demo defaults to a confidence threshold of `0.40` and runs inference on
+the machine running Streamlit. It does not save inspection histories, maintain
+traceability records, provide user accounts, or store results in a database.
 
 ## Technology
 
 - Python
 - Jupyter Notebook
+- Streamlit for the local image demo
 - Ultralytics YOLO
 - OpenCV for webcam capture and drawing
 - PyTorch, installed as an Ultralytics dependency
@@ -55,12 +55,16 @@ validated across operating systems or hardware.
 ├── .github/
 │   ├── ISSUE_TEMPLATE/
 │   └── PULL_REQUEST_TEMPLATE.md
+├── app.py
 ├── .gitignore
 ├── dataset_final/
 │   └── data.yaml
+├── inspection.py
 ├── test_live.ipynb
 ├── train_run.ipynb
 ├── requirements.txt
+├── tests/
+│   └── test_inspection.py
 ├── LICENSE
 ├── CONTRIBUTING.md
 ├── SECURITY.md
@@ -76,7 +80,9 @@ release. The ignore rules do not delete those local files.
 
 - Python with `pip`. Notebook metadata records Python 3.12.4 and 3.13.9; a
   supported-version range has not yet been established.
-- A webcam accessible to OpenCV for live inference.
+- An authorized compatible YOLO `.pt` model for inference. Model weights are
+  not included.
+- A webcam accessible to OpenCV only for the live notebook workflow.
 - For training, a compatible PyTorch device. The training notebook currently
   selects `device=0`; change it to `device='cpu'` to request CPU training.
 - A separately obtained, authorized dataset and model weights (see below).
@@ -98,9 +104,19 @@ On macOS or Linux, activate the environment with:
 source .venv/bin/activate
 ```
 
-Open the notebooks in Jupyter or an editor with notebook support. A notebook
-frontend is not pinned in `requirements.txt` and may need to be installed
-separately.
+Start the local image demo with:
+
+```sh
+streamlit run app.py
+```
+
+In the app, enter the path to your authorized model weights (the default is
+`best.pt`) and upload an image. The app runs on the local machine by default;
+do not expose it to a public network with private images or model files.
+
+To use the notebooks, open them in Jupyter or an editor with notebook support.
+A notebook frontend is not pinned in `requirements.txt` and may need to be
+installed separately.
 
 ## Assets and configuration
 
@@ -135,7 +151,9 @@ configuration are currently used.
 1. Open `train_run.ipynb` to retrain the detector. It uses 50 epochs, image
    size 640, batch size 8, and `workers=0`. Adjust `device=0` when a CUDA GPU
    is unavailable.
-2. Open `test_live.ipynb` for live inference. Select a camera index when
+2. Run `streamlit run app.py`, enter the path to your authorized `.pt` weights,
+   and upload a test image for an annotated result.
+3. Open `test_live.ipynb` for webcam inference. Select a camera index when
    prompted and press `q` in the OpenCV window to quit.
 
 Training and inference have not been validated as a complete clean install
@@ -143,23 +161,28 @@ from this release layout because the dataset and weights are excluded.
 
 ## Testing and validation
 
-There is currently no automated test suite or CI workflow. The existing
-notebook output showed a model loading and a camera frame being processed in
-one local environment; that is not a general compatibility or accuracy
-certification. No industrial acceptance, false-negative, or performance
-testing has been established.
+Run the focused outcome-logic tests with:
+
+```sh
+python -m unittest discover -s tests
+```
+
+These tests do not validate model accuracy, hardware compatibility, or
+industrial performance. No industrial acceptance, false-negative, or
+performance testing has been established.
 
 ## Security and operational use
 
-The webcam workflow appears to process frames locally and contains no explicit
-upload or persistence logic. Ultralytics may access the network to obtain
-weights or dependencies. Use only data you are authorized to process.
+The local demo processes uploaded images in the running Streamlit process and
+does not intentionally persist them. Ultralytics may access the network to
+obtain weights or dependencies. Use only data you are authorized to process.
 
-The current “no defect detected” behavior is not a valid conformity decision.
-Validate the model against representative production conditions, measure
-false positives and false negatives, add a bottle-presence/inspection-validity
-check, and obtain domain and regulatory review before operational deployment.
-See [SECURITY.md](SECURITY.md) for reporting security issues.
+The app and webcam notebook report “no defect detected” as an unverified
+result, not a conformity decision. Validate the model against representative
+production conditions, measure false positives and false negatives, add a
+bottle-presence/inspection-validity check, and obtain domain and regulatory
+review before operational deployment. See [SECURITY.md](SECURITY.md) for
+reporting security issues.
 
 ## Contributing
 
